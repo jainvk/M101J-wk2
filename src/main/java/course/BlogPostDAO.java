@@ -4,12 +4,7 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
 
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-
-import static com.mongodb.client.model.Filters.eq;
-import static com.mongodb.client.model.Sorts.descending;
 
 public class BlogPostDAO {
     MongoCollection<Document> postsCollection;
@@ -23,7 +18,7 @@ public class BlogPostDAO {
 
         // XXX HW 3.2,  Work Here
         Document post = null;
-        post = postsCollection.find(eq("permalink", permalink)).first();
+
 
 
         return post;
@@ -36,7 +31,7 @@ public class BlogPostDAO {
         // XXX HW 3.2,  Work Here
         // Return a list of DBObjects, each one a post from the posts collection
         List<Document> posts = null;
-        posts = postsCollection.find().sort(descending("date")).limit(limit).into(new ArrayList<Document>());
+
         return posts;
     }
 
@@ -62,19 +57,21 @@ public class BlogPostDAO {
 
         // Build the post object and insert it
         Document post = new Document();
-        post.append("title", title)
-                .append("permalink", permalink)
-                .append("author", username)
-                .append("body", body)
-                .append("tags", tags)
-                .append("comments", new ArrayList<String>())
-                .append("date", new Date());
-        postsCollection.insertOne(post);
+
+
         return permalink;
     }
 
 
+
+
     // White space to protect the innocent
+
+
+
+
+
+
 
 
     // Append a comment to a blog post
