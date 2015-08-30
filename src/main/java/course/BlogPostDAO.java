@@ -4,7 +4,12 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+
+import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Sorts.descending;
 
 public class BlogPostDAO {
     MongoCollection<Document> postsCollection;
@@ -18,7 +23,7 @@ public class BlogPostDAO {
 
         // XXX HW 3.2,  Work Here
         Document post = null;
-
+        post = postsCollection.find(eq("permalink", permalink)).first();
 
 
         return post;
@@ -31,7 +36,7 @@ public class BlogPostDAO {
         // XXX HW 3.2,  Work Here
         // Return a list of DBObjects, each one a post from the posts collection
         List<Document> posts = null;
-
+        posts = postsCollection.find().sort(descending("date")).limit(limit).into(new ArrayList<Document>());
         return posts;
     }
 
@@ -57,8 +62,14 @@ public class BlogPostDAO {
 
         // Build the post object and insert it
         Document post = new Document();
-
-
+        post.append("title", title)
+                .append("permalink", permalink)
+                .append("author", username)
+                .append("body", body)
+                .append("tags", tags)
+                .append("comments", new ArrayList<String>())
+                .append("date", new Date());
+        postsCollection.insertOne(post);
         return permalink;
     }
 
@@ -83,5 +94,10 @@ public class BlogPostDAO {
         // - email is optional and may come in NULL. Check for that.
         // - best solution uses an update command to the database and a suitable
         //   operator to append the comment on to any existing list of comments
+        Document comment = new Document("author", name).append("body", body);
+        if(email != null && !email.isEmpty()) {
+            comment.append("email",email);
+        }
+        postsCollection.updateOne(eq("permalink", permalink), new Document("$push", new Document("comments", comment)));
     }
 }
